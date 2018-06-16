@@ -16,3 +16,11 @@
 const Route = use('Route')
 
 Route.on('/').render('welcome')
+
+Route
+  .group(() => {
+    Route.resource('/user/infos', '/User/InfoController')
+    Route.resource('/play/games', '/Play/GameController')
+  })
+  .prefix('api/v1/steam')
+  .namespace('Api/V1/Steam')
