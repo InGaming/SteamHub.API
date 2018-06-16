@@ -26,7 +26,10 @@
     "@adonisjs/lucid": "^5.0.4",
     "@adonisjs/session": "^1.0.25",
     "@adonisjs/shield": "^1.0.6",
-    "steam": "^1.4.0"
+    "@adonisjs/websocket": "^1.0.10",
+    "steam": "^1.4.0",
+    "steam-totp": "^2.1.0",
+    "steam-user": "^3.27.1"
   },
   "devDependencies": {},
   "autoload": {
