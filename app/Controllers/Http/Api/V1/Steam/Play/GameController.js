@@ -1,16 +1,16 @@
 'use strict'
 
 class GameController {
-  post ( { request } ) {
+  store ( { request } ) {
     const SteamUser = require('steam-user')
     const SteamTotp = require('steam-totp')
     
     const client = new SteamUser()
     
-    const gameID = parseInt(request.get().gameID)
-    const userName = request.get().name
-    const password = request.get().password
-    const f2a = request.get().f2a
+    const gameID = parseInt(request.post().gameID)
+    const userName = request.post().name
+    const password = request.post().password
+    const f2a = request.post().f2a
 
     const logOnOptions = {
       accountName: userName,
