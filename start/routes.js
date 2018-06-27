@@ -21,6 +21,7 @@ Route
   .group(() => {
     Route.resource('/user/infos', '/User/InfoController')
     Route.resource('/play/games', '/Play/GameController')
+    Route.resource('/game/lists', '/Game/ListController')
   })
   .prefix('api/v1/steam')
   .namespace('Api/V1/Steam')
