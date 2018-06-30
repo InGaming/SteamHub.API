@@ -28,6 +28,7 @@
     "@adonisjs/shield": "^1.0.6",
     "@adonisjs/websocket": "^1.0.10",
     "got": "^8.3.1",
+    "lowdb": "^1.0.0",
     "steam": "^1.4.0",
     "steam-totp": "^2.1.0",
     "steam-user": "^3.27.1"
