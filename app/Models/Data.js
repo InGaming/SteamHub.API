@@ -1,7 +1,14 @@
 'use strict'
 const got = require('got')
+const fs = require("fs")
 
 function config (FileUrl) {
+  fs.stat(FileUrl, function (err, stats) {
+    if (err) {
+      fs.openSync(FileUrl, 'w')
+    }
+  })
+
   const low = require('lowdb')
   const FileSync = require('lowdb/adapters/FileSync')
   const adapter = new FileSync(FileUrl)
@@ -13,18 +20,17 @@ async function get (ResourceUrl) {
   try {
     const response = await got(ResourceUrl)
     console.log('Got resource: ' + ResourceUrl)
+    const parseResponse  = await JSON.parse(response.body)
+    return parseResponse
   } catch (error) {
     console.log('Got error')
   }
-  const parseResponse  = JSON.parse(response.body)
-  return parseResponse
 }
 
-async function insert (FileUrl, ResourceUrl, response) {
+async function insert (FileUrl, ResourceUrl) {
   const db = config (FileUrl)
   const parseResponse = await get(ResourceUrl)
   try {
-    // Set some defaults (required if your JSON file is empty)
     db.defaults({ data: [parseResponse] })
       .write()
     console.log('Insert DB in: ' + FileUrl)
@@ -34,3 +40,4 @@ async function insert (FileUrl, ResourceUrl, response) {
 }
 
 module.exports.insert = insert
+module.exports.config = config
