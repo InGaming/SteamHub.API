@@ -3,12 +3,6 @@ const got = require('got')
 const fs = require("fs")
 
 function config (FileUrl) {
-  fs.stat(FileUrl, function (err, stats) {
-    if (err) {
-      fs.openSync(FileUrl, 'w')
-    }
-  })
-
   const low = require('lowdb')
   const FileSync = require('lowdb/adapters/FileSync')
   const adapter = new FileSync(FileUrl)
