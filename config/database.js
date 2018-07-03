@@ -36,16 +36,16 @@ module.exports = {
 
   /*
   |--------------------------------------------------------------------------
-  | MySQL
+  | MySQL2
   |--------------------------------------------------------------------------
   |
   | Here we define connection settings for MySQL database.
   |
-  | npm i --save mysql
+  | npm i --save mysql2
   |
   */
-  mysql: {
-    client: 'mysql',
+  mysql2: {
+    client: 'mysql2',
     connection: {
       host: Env.get('DB_HOST', 'localhost'),
       port: Env.get('DB_PORT', ''),
