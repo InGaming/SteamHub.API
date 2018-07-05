@@ -32,6 +32,7 @@
     "got": "^8.3.1",
     "lowdb": "^1.0.0",
     "mysql2": "^1.5.3",
+    "node-cache": "^4.2.0",
     "steam": "^1.4.0",
     "steam-totp": "^2.1.0",
     "steam-user": "^3.27.1"
