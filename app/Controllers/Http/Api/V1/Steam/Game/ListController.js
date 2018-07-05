@@ -16,7 +16,7 @@ class ListController {
     }
 
     const lists = List.all()
-    await Redis.set('steamGameLists', JSON.stringify(lists), 'ex', 6000)
+    await Redis.set('steamGameLists', JSON.stringify(lists), 'ex', 12000)
     return lists
 
   }
