@@ -11,14 +11,14 @@ class ListController {
   async index () {
 
     const cachedLists = await Redis.get('steamGameLists')
-
-    if (cachedLists) {
+    if (Array.isArray(cachedLists)) {
       return JSON.parse(cachedLists)
     }
 
-    const lists = await List.all()
+    const lists = List.all()
     await Redis.set('steamGameLists', JSON.stringify(lists), 'ex', 6000)
     return lists
+
   }
   
   async show ({ params }) {
