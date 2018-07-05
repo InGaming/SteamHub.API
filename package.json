@@ -28,6 +28,7 @@
     "@adonisjs/session": "^1.0.25",
     "@adonisjs/shield": "^1.0.6",
     "@adonisjs/websocket": "^1.0.10",
+    "chunk-array": "^1.0.2",
     "got": "^8.3.1",
     "lowdb": "^1.0.0",
     "mysql2": "^1.5.3",
