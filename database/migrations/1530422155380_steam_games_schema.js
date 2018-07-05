@@ -6,9 +6,8 @@ class SteamGamesSchema extends Schema {
   up () {
     this.create('steam_games', (table) => {
       table.increments()
-      table.string('appid', 10)
-      table.string('english_name', 100)
-      table.string('chinese_name', 100)
+      table.integer('appid', 10)
+      table.string('name')
       table.timestamps()
     })
   }
