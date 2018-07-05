@@ -8,15 +8,18 @@ const chunks = require('chunk-array').chunks
 
 class ListController {
 
-  async index () {
-
-    const cachedLists = await Redis.get('steamGameLists')
+  async index ({ request }) {
+    const page = request.get().page
+    if (page === undefined) {
+      return 'Need page id'
+    }
+    const cachedLists = await Redis.get('steamGameLists=' + page)
     if (Array.isArray(cachedLists)) {
       return JSON.parse(cachedLists)
     }
 
-    const lists = List.all()
-    await Redis.set('steamGameLists', JSON.stringify(lists), 'ex', 12000)
+    const lists = await List.query().paginate(page)
+    await Redis.set('steamGameLists=' + page, JSON.stringify(lists.toJSON()), 'ex', 12000)
     return lists
 
   }
