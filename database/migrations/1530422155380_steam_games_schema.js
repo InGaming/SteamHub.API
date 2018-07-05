@@ -9,6 +9,7 @@ class SteamGamesSchema extends Schema {
       table.integer('appid', 10)
       table.string('name')
       table.timestamps()
+      table.unique('appid')
     })
   }
 

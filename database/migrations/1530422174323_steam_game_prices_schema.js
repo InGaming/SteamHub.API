@@ -12,6 +12,7 @@ class SteamGamePricesSchema extends Schema {
       table.integer('initial', 50)
       table.integer('final', 50)
       table.integer('discount_percent', 50)
+      table.unique('appid')
       table.timestamps()
     })
   }
