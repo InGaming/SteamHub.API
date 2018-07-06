@@ -71,28 +71,10 @@ class PriceController {
       requestd('https://store.steampowered.com/api/appdetails?appids=' + element + '&cc=cn&filters=price_overview', function (error, response, body) {
         let parseResponse = JSON.parse(body)
         element.forEach(apps => {
-          let defaultArrayGot = [
-            arrayGot[indexGot] = {
-              appid: apps,
-              success: parseResponse[apps]['success'],
-              currency: null,
-              initial: null,
-              final: null,
-              discount_percent: null
-            }
-          ]
           if (parseResponse[apps].hasOwnProperty('data')) {
             let appDatas = parseResponse[apps].data
             if (appDatas.hasOwnProperty('price_overview')) {
               let priceOverview = appDatas['price_overview']
-              arrayGot[indexGot] = {
-                appid: apps,
-                success: parseResponse[apps]['success'],
-                currency: priceOverview['currency'],
-                initial: priceOverview['initial'],
-                final: priceOverview['final'],
-                discount_percent: priceOverview['discount_percent']
-              }
               indexGot++
               Price.create(
                 {
@@ -105,11 +87,9 @@ class PriceController {
                 }
               )
             } else {
-              defaultArrayGot
               indexGot++
             }
           } else {
-            defaultArrayGot
             indexGot++
           }
         })
