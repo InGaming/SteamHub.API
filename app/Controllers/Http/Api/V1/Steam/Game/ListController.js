@@ -9,9 +9,9 @@ const chunks = require('chunk-array').chunks
 class ListController {
 
   async index ({ request }) {
-    const page = request.get().page
+    let page = request.get().page
     if (page === undefined) {
-      return 'Need page id'
+      page = 1
     }
     const cachedLists = await Redis.get('steamGameLists=' + page)
     if (cachedLists) {
