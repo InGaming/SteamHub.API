@@ -14,7 +14,7 @@ class ListController {
       return 'Need page id'
     }
     const cachedLists = await Redis.get('steamGameLists=' + page)
-    if (Array.isArray(cachedLists)) {
+    if (cachedLists) {
       return JSON.parse(cachedLists)
     }
 
