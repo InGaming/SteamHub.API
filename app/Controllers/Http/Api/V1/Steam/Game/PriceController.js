@@ -9,9 +9,9 @@ const chunks = require('chunk-array').chunks
 class PriceController {
   async index ({ request }) {
 
-    const page = request.get().page
+    let page = request.get().page
     if (page === undefined) {
-      return 'Need page id'
+      page = 1
     }
     const cachedPriceLists = await Redis.get('steamGameListPrices=' + page)
     if (cachedPriceLists) {
