@@ -19,7 +19,7 @@ class ListController {
     }
 
     const lists = await List.query().paginate(page)
-    await Redis.set('steamGameLists=' + page, JSON.stringify(lists.toJSON()), 'ex', 12000)
+    await Redis.set('steamGameLists=' + page, JSON.stringify(lists.toJSON()), 'ex', 43200)
     return lists
 
   }
@@ -33,7 +33,7 @@ class ListController {
       return JSON.parse(cachedAppdetails)
     }
 
-    const appdetails = await got('https://store.steampowered.com/api/appdetails?appids=' + id)
+    const appdetails = await got('https://store.steampowered.com/api/appdetails?appids=' + id + '&cc=cn&l=cn')
     const parseAppdetails = JSON.parse(appdetails.body)
     await Redis.set('steamGameAppdetails=' + id, JSON.stringify(parseAppdetails), 'ex', 86400)
     return parseAppdetails
