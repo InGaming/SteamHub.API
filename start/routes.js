@@ -22,6 +22,7 @@ Route
     Route.resource('/user/infos', '/User/InfoController')
     Route.resource('/play/games', '/Play/GameController')
     Route.resource('/game/lists', '/Game/ListController')
+    Route.resource('/game/prices', '/Game/PriceController')
   })
   .prefix('api/v1/steam')
   .namespace('Api/V1/Steam')
