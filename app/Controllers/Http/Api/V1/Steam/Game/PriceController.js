@@ -3,11 +3,20 @@ const Price = use('App/Models/Api/V1/Steam/Game/Price')
 const List = use('App/Models/Api/V1/Steam/Game/List')
 const Env = use('Env')
 const Redis = use('Redis')
-const got = require('got')
+const requestd = require('request')
 const chunks = require('chunk-array').chunks
 
 class PriceController {
   async index () {
+    return Price.all()
+  }
+
+  async store ({ request }) {
+    const key = request.get().key
+    if (key !== Env.get('API_KEY')) {
+      return 'error'
+    }
+
     const appList = await List.query().select('appid').fetch()
     const arrayAppList = appList.toJSON()
 
@@ -21,28 +30,35 @@ class PriceController {
     const arrayGot = new Array()
     let indexGot = 0
     const chunkAppLists = chunks(arrayList, 1000)
-
-    function getinfo () {
-      const data = new Promise( function ( resolve , reject ) {
-        chunkAppLists.forEach(async (element) => {
-          let response = await got('https://store.steampowered.com/api/appdetails?appids=' + element + '&cc=cn&filters=price_overview')
-          let parseResponse = JSON.parse(response.body)
-          element.forEach(async (apps) => {
-            let defaultArrayGot = [
+    chunkAppLists.forEach(element => {
+      requestd('https://store.steampowered.com/api/appdetails?appids=' + element + '&cc=cn&filters=price_overview', function (error, response, body) {
+        let parseResponse = JSON.parse(body)
+        element.forEach(apps => {
+          let defaultArrayGot = [
+            arrayGot[indexGot] = {
+              appid: apps,
+              success: parseResponse[apps]['success'],
+              currency: null,
+              initial: null,
+              final: null,
+              discount_percent: null
+            }
+          ]
+          if (parseResponse[apps].hasOwnProperty('data')) {
+            let appDatas = parseResponse[apps].data
+            if (appDatas.hasOwnProperty('price_overview')) {
+              let priceOverview = appDatas['price_overview']
               arrayGot[indexGot] = {
                 appid: apps,
                 success: parseResponse[apps]['success'],
-                currency: null,
-                initial: null,
-                final: null,
-                discount_percent: null
+                currency: priceOverview['currency'],
+                initial: priceOverview['initial'],
+                final: priceOverview['final'],
+                discount_percent: priceOverview['discount_percent']
               }
-            ]
-            if (parseResponse[apps].hasOwnProperty('data')) {
-              let appDatas = parseResponse[apps].data
-              if (appDatas.hasOwnProperty('price_overview')) {
-                let priceOverview = appDatas['price_overview']
-                arrayGot[indexGot] = {
+              indexGot++
+              Price.create(
+                {
                   appid: apps,
                   success: parseResponse[apps]['success'],
                   currency: priceOverview['currency'],
@@ -50,47 +66,18 @@ class PriceController {
                   final: priceOverview['final'],
                   discount_percent: priceOverview['discount_percent']
                 }
-                resolve(arrayGot)
-                indexGot++
-              } else {
-                defaultArrayGot
-                resolve(arrayGot)
-                indexGot++
-              }
+              )
             } else {
               defaultArrayGot
-              resolve(arrayGot)
               indexGot++
             }
-          })
+          } else {
+            defaultArrayGot
+            indexGot++
+          }
         })
-      } )
-      return data
-    }
-    (async function () {
-        let arr = await getinfo();//arr即为返回的数据
-        console.log(arr)
-    } )()
-
-    console.log(arrayGot)
-    return 
-  }
-
-  async store ({ request }) {
-    const key = request.get().key
-    if (key !== Env.get('API_KEY')) {
-      return 'error'
-    }
-    const response = await got('https://api.steampowered.com/ISteamApps/GetAppList/v0002/')
-    const parseResponse = JSON.parse(response.body)
-    const chunkAppLists = chunks(parseResponse.applist.apps, 250)
-
-    await List.truncate()
-
-    for (let index = 0; index < chunkAppLists.length; index++) {
-      const element = chunkAppLists[index]
-      await List.createMany(element)
-    }
+      })
+    })
 
     return
   }
