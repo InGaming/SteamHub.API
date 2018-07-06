@@ -22,43 +22,56 @@ class PriceController {
     let indexGot = 0
     const chunkAppLists = chunks(arrayList, 1000)
 
-    chunkAppLists.forEach(async (element) => {
-      let response = await got('https://store.steampowered.com/api/appdetails?appids=' + element + '&cc=cn&filters=price_overview')
-      let parseResponse = JSON.parse(response.body)
-      element.forEach(async (apps) => {
-        let defaultArrayGot = [
-          arrayGot[indexGot] = {
-            appid: apps,
-            success: parseResponse[apps]['success'],
-            currency: null,
-            initial: null,
-            final: null,
-            discount_percent: null
-          }
-        ]
-        if (parseResponse[apps].hasOwnProperty('data')) {
-          let appDatas = parseResponse[apps].data
-          if (appDatas.hasOwnProperty('price_overview')) {
-            let priceOverview = appDatas['price_overview']
-            arrayGot[indexGot] = {
-              appid: apps,
-              success: parseResponse[apps]['success'],
-              currency: priceOverview['currency'],
-              initial: priceOverview['initial'],
-              final: priceOverview['final'],
-              discount_percent: priceOverview['discount_percent']
+    function getinfo () {
+      const data = new Promise( function ( resolve , reject ) {
+        chunkAppLists.forEach(async (element) => {
+          let response = await got('https://store.steampowered.com/api/appdetails?appids=' + element + '&cc=cn&filters=price_overview')
+          let parseResponse = JSON.parse(response.body)
+          element.forEach(async (apps) => {
+            let defaultArrayGot = [
+              arrayGot[indexGot] = {
+                appid: apps,
+                success: parseResponse[apps]['success'],
+                currency: null,
+                initial: null,
+                final: null,
+                discount_percent: null
+              }
+            ]
+            if (parseResponse[apps].hasOwnProperty('data')) {
+              let appDatas = parseResponse[apps].data
+              if (appDatas.hasOwnProperty('price_overview')) {
+                let priceOverview = appDatas['price_overview']
+                arrayGot[indexGot] = {
+                  appid: apps,
+                  success: parseResponse[apps]['success'],
+                  currency: priceOverview['currency'],
+                  initial: priceOverview['initial'],
+                  final: priceOverview['final'],
+                  discount_percent: priceOverview['discount_percent']
+                }
+                resolve(arrayGot)
+                indexGot++
+              } else {
+                defaultArrayGot
+                resolve(arrayGot)
+                indexGot++
+              }
+            } else {
+              defaultArrayGot
+              resolve(arrayGot)
+              indexGot++
             }
-            indexGot++
-          } else {
-            defaultArrayGot
-            indexGot++
-          }
-        } else {
-          defaultArrayGot
-          indexGot++
-        }
-      })
-    })
+          })
+        })
+      } )
+      return data
+    }
+    (async function () {
+        let arr = await getinfo();//arr即为返回的数据
+        console.log(arr)
+    } )()
+
     console.log(arrayGot)
     return 
   }
