@@ -9,13 +9,19 @@ const chunks = require('chunk-array').chunks
 class PriceController {
   async index ({ request }) {
 
-    if (Array.isArray(cachedLists)) {
-      return JSON.parse(cachedLists)
+    const page = request.get().page
+    if (page === undefined) {
+      return 'Need page id'
+    }
+    const cachedPriceLists = await Redis.get('steamGameListPrices=' + page)
+    if (cachedPriceLists) {
+      return JSON.parse(cachedPriceLists)
     }
 
-    const prices = await Price.all()
-    await Redis.set('steamGamePrices' + page, prices, 'ex', 43200)
+    const prices = await Price.query().paginate(page)
+    await Redis.set('steamGameListPrices=' + page, JSON.stringify(prices.toJSON()), 'ex', 43200)
     return prices
+
   }
 
   async show ({ params, request }) {
