@@ -8,35 +8,36 @@ const chunks = require('chunk-array').chunks
 
 class ListController {
 
-  async index ({ request }) {
+  async index ({ request, response }) {
+
     let page = request.get().page
     if (page === undefined) {
       page = 1
     }
     const cachedLists = await Redis.get('steamGameLists=' + page)
     if (cachedLists) {
-      return JSON.parse(cachedLists)
+      response.send(JSON.parse(cachedLists))
     }
 
     const lists = await List.query().paginate(page)
     await Redis.set('steamGameLists=' + page, JSON.stringify(lists.toJSON()), 'ex', 43200)
-    return lists
+    response.send(lists)
 
   }
   
-  async show ({ params }) {
+  async show ({ params, response }) {
     
     const id = params.id
     const cachedAppdetails = await Redis.get('steamGameAppdetails=' + id)
 
     if (cachedAppdetails) {
-      return JSON.parse(cachedAppdetails)
+      response.send(JSON.parse(cachedAppdetails))
     }
 
     const appdetails = await got('https://store.steampowered.com/api/appdetails?appids=' + id + '&cc=cn&l=cn')
     const parseAppdetails = JSON.parse(appdetails.body)
     await Redis.set('steamGameAppdetails=' + id, JSON.stringify(parseAppdetails), 'ex', 86400)
-    return parseAppdetails
+    response.send(parseAppdetails)
   }
 
   async store ({ request }) {

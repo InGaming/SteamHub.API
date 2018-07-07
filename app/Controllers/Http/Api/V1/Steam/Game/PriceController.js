@@ -7,7 +7,7 @@ const requestd = require('request')
 const chunks = require('chunk-array').chunks
 
 class PriceController {
-  async index ({ request }) {
+  async index ({ request, response }) {
 
     let page = request.get().page
     if (page === undefined) {
@@ -15,37 +15,37 @@ class PriceController {
     }
     const cachedPriceLists = await Redis.get('steamGameListPrices=' + page)
     if (cachedPriceLists) {
-      return JSON.parse(cachedPriceLists)
+      response.send(JSON.parse(cachedPriceLists))
     }
 
     const prices = await Price.query().paginate(page)
     await Redis.set('steamGameListPrices=' + page, JSON.stringify(prices.toJSON()), 'ex', 43200)
-    return prices
+    response.send(prices)
 
   }
 
-  async show ({ params, request }) {
+  async show ({ params, request, response }) {
     const appid = params.id
     const page = request.get().page
     if (page !== undefined) {
       const cachedPagePrices = await Redis.get('steamGamePagePrices=' + page)
 
       if (cachedPagePrices) {
-        return JSON.parse(cachedPagePrices)
+        response.send(JSON.parse(cachedPagePrices))
       }
       const pagePrices = await Price.query().where('appid', appid).paginate(page)
       await Redis.set('steamGamePagePrices=' + page, JSON.stringify(pagePrices.toJSON()), 'ex', 43200)
-      return pagePrices
+      response.send(pagePrices)
     }
 
     
     const cachedPrices = await Redis.get('steamGamePrices=' + appid)
     if (cachedPrices) {
-      return JSON.parse(cachedPrices)
+      response.send(JSON.parse(cachedPrices))
     }
     const prices = await Price.query().where('appid', appid).fetch()
     await Redis.set('steamGamePrices=' + appid, JSON.stringify(prices.toJSON()), 'ex', 43200)
-    return prices
+    response.send(prices)
   }
 
   async store ({ request }) {
