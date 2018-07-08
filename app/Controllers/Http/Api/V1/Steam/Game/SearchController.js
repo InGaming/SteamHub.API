@@ -6,10 +6,15 @@ const Redis = use('Redis')
 class SearchController {
   async index ({ request, response }) {
 
+    const q =request.get().q
     const appid = request.get().appid
     const name = request.get().name
     const filter = request.get().filter
     const priceTime = request.get().priceTime
+
+    if (q) {
+      return getQuestion(q)
+    }
 
     if (name) {
       return getGameName(name)
@@ -30,6 +35,16 @@ class SearchController {
       }
     }else if (appid) {
       return getGameId(appid)
+    }
+
+    // 模糊查询
+    async function getQuestion(q) {
+      const data =await List.query().with('prices')
+                                    .where('appid', q)
+                                    .orWhere('name', 'like', '%' + q + '%')
+                                    .orWhere('created_at', 'like', '%' + q + '%')
+                                    .fetch()
+      return data.toJSON()
     }
 
     // 请求指定 appid 内容
