@@ -7,7 +7,7 @@ class Price extends Model {
     return 'steam_game_prices'
   }
 
-  lists () {
+  app () {
     return this.belongsTo('App/Models/Api/V1/Steam/Game/List', 'appid', 'appid')
   }
 }
