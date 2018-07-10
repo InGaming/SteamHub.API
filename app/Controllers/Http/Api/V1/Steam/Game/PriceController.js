@@ -1,10 +1,11 @@
 'use strict'
 const Price = use('App/Models/Api/V1/Steam/Game/Price')
 const List = use('App/Models/Api/V1/Steam/Game/List')
+const Job = use('App/Jobs/Api/V1/Steam/Game/Price')
 const Env = use('Env')
 const Redis = use('Redis')
-const requestd = require('request')
-const chunks = require('chunk-array').chunks
+const requested = require('request')
+const _ = require('lodash')
 
 class PriceController {
   async index ({ request, response }) {
@@ -57,46 +58,21 @@ class PriceController {
     const appList = await List.query().select('appid').fetch()
     const arrayAppList = appList.toJSON()
 
-    const arrayList = new Array()
-    let indexList = 0
-    arrayAppList.forEach(element => {
-      arrayList[indexList] = element.appid
-      indexList++
-    })
+    const appidList =  _.map(arrayAppList, 'appid')
+    const chunkAppidList = _.chunk(appidList, 1000)
     
-    const arrayGot = new Array()
-    let indexGot = 0
-    const chunkAppLists = chunks(arrayList, 1000)
-    chunkAppLists.forEach(element => {
-      requestd('https://store.steampowered.com/api/appdetails?appids=' + element + '&cc=cn&filters=price_overview', function (error, response, body) {
-        let parseResponse = JSON.parse(body)
-        element.forEach(apps => {
-          if (parseResponse[apps].hasOwnProperty('data')) {
-            let appDatas = parseResponse[apps].data
-            if (appDatas.hasOwnProperty('price_overview')) {
-              let priceOverview = appDatas['price_overview']
-              indexGot++
-              Price.create(
-                {
-                  appid: apps,
-                  success: parseResponse[apps]['success'],
-                  currency: priceOverview['currency'],
-                  initial: priceOverview['initial'],
-                  final: priceOverview['final'],
-                  discount_percent: priceOverview['discount_percent']
-                }
-              )
-            } else {
-              indexGot++
-            }
-          } else {
-            indexGot++
-          }
+    let appidArray = []
+    _(chunkAppidList).forEach(function(value) {
+      requested('https://store.steampowered.com/api/appdetails?appids=' + value + '&cc=cn&filters=price_overview', function (error, response, body) {
+        let parseBody = JSON.parse(body)
+        Object.keys(parseBody).forEach(function (key) {
+          Price.create({
+            appid: key
+          })
         })
       })
     })
-
-    return
+    return indexAppid
   }
 }
 
