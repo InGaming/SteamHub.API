@@ -61,7 +61,6 @@ class PriceController {
     const appidList =  _.map(arrayAppList, 'appid')
     const chunkAppidList = _.chunk(appidList, 1000)
     
-    let appidArray = []
     _(chunkAppidList).forEach(function(value) {
       requested('https://store.steampowered.com/api/appdetails?appids=' + value + '&cc=cn&filters=price_overview', function (error, response, body) {
         let parseBody = JSON.parse(body)
