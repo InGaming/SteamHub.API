@@ -4,6 +4,7 @@ const List = use('App/Models/Api/V1/Steam/Game/List')
 const Job = use('App/Jobs/Api/V1/Steam/Game/Price')
 const Env = use('Env')
 const Redis = use('Redis')
+const kue = use('Kue')
 const requested = require('request')
 const _ = require('lodash')
 
@@ -55,6 +56,14 @@ class PriceController {
       return 'error'
     }
 
+    // Job init
+    const priority = 'normal'
+    const attempts = 3
+    const remove = true
+    const jobFn = job => {
+      job.backoff()
+    }
+
     const appList = await List.query().select('appid').fetch()
     const arrayAppList = appList.toJSON()
 
@@ -64,14 +73,24 @@ class PriceController {
     _(chunkAppidList).forEach(function(value) {
       requested('https://store.steampowered.com/api/appdetails?appids=' + value + '&cc=cn&filters=price_overview', function (error, response, body) {
         let parseBody = JSON.parse(body)
-        Object.keys(parseBody).forEach(function (key) {
-          Price.create({
-            appid: key
-          })
-        })
+        for (let key in parseBody) {
+          if (! _.isEmpty(parseBody[key]['data'])) {
+            if(! _.isEmpty(parseBody[key]['data']['price_overview'])) {
+              let jobData = {
+                appid: key,
+                success: parseBody[key]['success'],
+                currency: parseBody[key]['data']['price_overview']['currency'],
+                initial: parseBody[key]['data']['price_overview']['initial'],
+                final: parseBody[key]['data']['price_overview']['final'],
+                discount_percent: parseBody[key]['data']['price_overview']['discount_percent'],
+              }
+              let job = kue.dispatch(Job.key, jobData, { priority, attempts, remove, jobFn })
+            }
+          }
+        }
       })
     })
-    return indexAppid
+    return
   }
 }
 

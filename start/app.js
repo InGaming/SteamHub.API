@@ -64,7 +64,7 @@ const aliases = {}
 const commands = []
 
 const jobs = [
-  'App/Jobs/Api/V1/Steam/Game/List'
+  'App/Jobs/Api/V1/Steam/Game/Price'
 ]
 
 module.exports = { providers, aceProviders, aliases, commands, jobs }
