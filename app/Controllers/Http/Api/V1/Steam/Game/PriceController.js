@@ -1,7 +1,6 @@
 'use strict'
 const Price = use('App/Models/Api/V1/Steam/Game/Price')
 const List = use('App/Models/Api/V1/Steam/Game/List')
-const Job = use('App/Jobs/Api/V1/Steam/Game/Price')
 const Env = use('Env')
 const Redis = use('Redis')
 const kue = use('Kue')
@@ -56,14 +55,6 @@ class PriceController {
       return 'error'
     }
 
-    // Job init
-    const priority = 'normal'
-    const attempts = 3
-    const remove = true
-    const jobFn = job => {
-      job.backoff()
-    }
-
     const appList = await List.query().select('appid').fetch()
     const arrayAppList = appList.toJSON()
 
@@ -76,15 +67,14 @@ class PriceController {
         for (let key in parseBody) {
           if (! _.isEmpty(parseBody[key]['data'])) {
             if(! _.isEmpty(parseBody[key]['data']['price_overview'])) {
-              let jobData = {
+              Price.create({
                 appid: key,
                 success: parseBody[key]['success'],
                 currency: parseBody[key]['data']['price_overview']['currency'],
                 initial: parseBody[key]['data']['price_overview']['initial'],
                 final: parseBody[key]['data']['price_overview']['final'],
-                discount_percent: parseBody[key]['data']['price_overview']['discount_percent'],
-              }
-              let job = kue.dispatch(Job.key, jobData, { priority, attempts, remove, jobFn })
+                discount_percent: parseBody[key]['data']['price_overview']['discount_percent']
+              })
             }
           }
         }
