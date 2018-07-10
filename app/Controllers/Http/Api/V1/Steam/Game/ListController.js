@@ -4,7 +4,7 @@ const List = use('App/Models/Api/V1/Steam/Game/List')
 const Env = use('Env')
 const Redis = use('Redis')
 const got = require('got')
-const chunks = require('chunk-array').chunks
+const _ = require('lodash')
 
 class ListController {
 
@@ -45,9 +45,10 @@ class ListController {
     if (key !== Env.get('API_KEY')) {
       return 'error'
     }
+
     const response = await got('https://api.steampowered.com/ISteamApps/GetAppList/v0002/')
     const parseResponse = JSON.parse(response.body)
-    const chunkAppLists = chunks(parseResponse.applist.apps, 250)
+    const chunkAppLists = _.chunk(parseResponse.applist.apps, 250)
 
     await List.truncate()
 
