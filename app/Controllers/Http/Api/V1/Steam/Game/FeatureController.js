@@ -9,14 +9,15 @@ class FeatureController {
 
   async index ({ request }) {
 
-    const cacheFeatures = await Redis.get('steamGameFeatures')
-    if (cacheFeatures) {
-      return JSON.parse(cacheFeatures)
+    const Cache = await Redis.get('GameFeatures')
+    if (Cache) {
+      return JSON.parse(Cache)
     }
 
-    const features = await Feature.all()
-    await Redis.set('steamGameFeatures', JSON.stringify(features.toJSON()), 'ex', 1800)
-    return features.toJSON()
+    const response = await got('https://store.steampowered.com/api/featuredcategories')
+
+    await Redis.set('GameFeatures', response.body, 'ex', 300)
+    return JSON.parse(response.body)
 
   }
 
