@@ -1,6 +1,5 @@
 'use strict'
 const GetGameApps = use('App/Models/Api/V1/Steam/App')
-const GetGameAppsInfo = use('App/Models/Api/V1/Steam/AppInfo')
 const Redis = use('Redis')
 
 class AppController {
