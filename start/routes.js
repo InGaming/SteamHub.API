@@ -25,6 +25,7 @@ Route
     Route.resource('/game/prices', '/Game/PriceController')
     Route.resource('/game/searches', '/Game/SearchController')
     Route.resource('/game/features', '/Game/FeatureController')
+    Route.resource('/rss', '/RSSController')
     Route.resource('/apps', '/AppController')
     Route.resource('/app/infos', '/AppInfoController')
     Route.resource('/app/store/update/queues', '/StoreUpdateQueueController')
