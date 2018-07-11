@@ -27,6 +27,7 @@ Route
     Route.resource('/game/features', '/Game/FeatureController')
     Route.resource('/apps', '/AppController')
     Route.resource('/app/infos', '/AppInfoController')
+    Route.resource('/app/store/update/queues', '/StoreUpdateQueueController')
   })
   .prefix('api/v1/steam')
   .namespace('Api/V1/Steam')
