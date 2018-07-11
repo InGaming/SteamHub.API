@@ -12,7 +12,7 @@ class AppController {
     if (Cached) {
       return JSON.parse(Cached)
     }
-    const GameApps = await GetGameApps.query().with('AppsTypes').paginate(page)
+    const GameApps = await GetGameApps.query().with('AppsTypes').paginate(page, 12)
     await Redis.set('GameApps=' + page, JSON.stringify(GameApps.toJSON()), 'ex', 600)
     return GameApps.toJSON()
   }
