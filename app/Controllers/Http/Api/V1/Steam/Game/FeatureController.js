@@ -16,7 +16,7 @@ class FeatureController {
 
     const response = await got('https://store.steampowered.com/api/featuredcategories')
 
-    await Redis.set('GameFeatures', response.body, 'ex', 300)
+    await Redis.set('GameFeatures', response.body, 'ex', 600)
     return JSON.parse(response.body)
 
   }
