@@ -28,6 +28,7 @@ Route
     Route.resource('/rss', '/RSSController')
     Route.resource('/apps', '/AppController')
     Route.resource('/app/infos', '/AppInfoController')
+    Route.resource('/app/appdetails', '/AppDetailController')
     Route.resource('/app/store/update/queues', '/StoreUpdateQueueController')
   })
   .prefix('api/v1/steam')

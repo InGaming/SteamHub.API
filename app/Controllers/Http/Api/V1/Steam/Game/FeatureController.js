@@ -7,7 +7,7 @@ const Env = use('Env')
 
 class FeatureController {
 
-  async index ({ request }) {
+  async index () {
 
     const Cache = await Redis.get('GameFeatures')
     if (Cache) {
