@@ -1,4 +1,6 @@
 'use strict'
+const Redis = use('Redis')
+const got = require('got')
 
 class AppDetailController {
   async show ({ params }) {
