@@ -5,12 +5,12 @@ const Redis = use('Redis')
 class AppInfoController {
   async show ({ params }) {
     const AppID = params.id
-    const Cached = await Redis.get('GameAppID=' + AppID)
+    const Cached = await Redis.get('GameAppInfoID=' + AppID)
     if (Cached) {
       return JSON.parse(Cached)
     }
     const GameAppID = await GetGameAppInfos.query().with('KeyNames').where('AppID', AppID).fetch()
-    await Redis.set('GameAppID=' + AppID, JSON.stringify(GameAppID.toJSON()), 'ex', 600)
+    await Redis.set('GameAppInfoID=' + AppID, JSON.stringify(GameAppID.toJSON()), 'ex', 600)
     return GameAppID.toJSON()
   }
 }
