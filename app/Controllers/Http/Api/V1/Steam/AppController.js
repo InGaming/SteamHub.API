@@ -35,7 +35,7 @@ class AppController {
     if (Cached) {
       return JSON.parse(Cached)
     }
-    const GameAppID = await GetGameApps.query().with('AppsTypes').with('AppsInfo').where('AppID', AppID).fetch()
+    const GameAppID = await GetGameApps.query().with('AppsTypes').where('AppID', AppID).fetch()
     await Redis.set('GameAppID=' + AppID, JSON.stringify(GameAppID.toJSON()), 'ex', 600)
     return GameAppID.toJSON()
   }
