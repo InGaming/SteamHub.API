@@ -45,7 +45,7 @@ class PriceController {
     }
     const prices = await Price.query().where('appid', appid).fetch()
     await Redis.set('steamGamePrices=' + appid, JSON.stringify(prices.toJSON()), 'ex', 43200)
-    response.send(prices)
+    return prices.toJSON()
   }
 
   async store({ request }) {
