@@ -7,8 +7,12 @@ class Price extends Model {
     return 'AppsPrices'
   }
 
-  static get dates () {
-    return super.dates.concat(['LastUpdated'])
+  static get createdAtColumn () {
+    return null
+  }
+
+  static get updatedAtColumn () {
+    return 'LastUpdated'
   }
 
   // 反向关联 Apps 表
