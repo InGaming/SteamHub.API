@@ -4,12 +4,14 @@ const Model = use('Model')
 
 class Price extends Model {
   static get table () {
-    return 'steam_game_prices'
+    return 'AppsPrices'
   }
 
-  app () {
-    return this.belongsTo('App/Models/Api/V1/Steam/Game/List', 'appid', 'appid')
+  // 反向关联 Apps 表
+  Apps () {
+    return this.belongsTo('App/Models/Api/V1/Steam/App', 'AppID', 'AppID')
   }
+
 }
 
 module.exports = Price

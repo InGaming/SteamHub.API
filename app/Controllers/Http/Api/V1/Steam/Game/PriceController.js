@@ -1,14 +1,13 @@
 'use strict'
 const Price = use('App/Models/Api/V1/Steam/Game/Price')
-const List = use('App/Models/Api/V1/Steam/Game/List')
+const GetGameApps = use('App/Models/Api/V1/Steam/App')
 const Env = use('Env')
 const Redis = use('Redis')
-const kue = use('Kue')
 const requested = require('request')
 const _ = require('lodash')
 
 class PriceController {
-  async index ({ request, response }) {
+  async index({ request, response }) {
 
     let page = request.get().page
     if (page === undefined) {
@@ -25,7 +24,7 @@ class PriceController {
 
   }
 
-  async show ({ params, request, response }) {
+  async show({ params, request, response }) {
     const appid = params.id
     const page = request.get().page
     if (page !== undefined) {
@@ -39,7 +38,7 @@ class PriceController {
       response.send(pagePrices)
     }
 
-    
+
     const cachedPrices = await Redis.get('steamGamePrices=' + appid)
     if (cachedPrices) {
       response.send(JSON.parse(cachedPrices))
@@ -49,37 +48,38 @@ class PriceController {
     response.send(prices)
   }
 
-  async store ({ request }) {
+  async store({ request }) {
     const key = request.get().key
     if (key !== Env.get('API_KEY')) {
       return 'error'
     }
 
-    const appList = await List.query().select('appid').fetch()
+    const appList = await GetGameApps.query().select('appid').fetch()
     const arrayAppList = appList.toJSON()
 
-    const appidList =  _.map(arrayAppList, 'appid')
-    const chunkAppidList = _.chunk(appidList, 1000)
-    
-    _(chunkAppidList).forEach(function(value) {
-      requested('https://store.steampowered.com/api/appdetails?appids=' + value + '&cc=cn&filters=price_overview', function (error, response, body) {
-        let parseBody = JSON.parse(body)
-        for (let key in parseBody) {
-          if (! _.isEmpty(parseBody[key]['data'])) {
-            if(! _.isEmpty(parseBody[key]['data']['price_overview'])) {
-              Price.create({
-                appid: key,
-                success: parseBody[key]['success'],
-                currency: parseBody[key]['data']['price_overview']['currency'],
-                initial: parseBody[key]['data']['price_overview']['initial'],
-                final: parseBody[key]['data']['price_overview']['final'],
-                discount_percent: parseBody[key]['data']['price_overview']['discount_percent']
-              })
+    const appidList = _.map(arrayAppList, 'appid')
+    const chunkAppidList = _.chunk(appidList, 100)
+    for (let i = 0; i < chunkAppidList.length; i++) {
+      setTimeout(function timer() {
+        requested('https://store.steampowered.com/api/appdetails?appids=' + chunkAppidList[i] + '&cc=cn&filters=price_overview', function (error, response, body) {
+          let parseBody = JSON.parse(body)
+          for (let key in parseBody) {
+            if (!_.isEmpty(parseBody[key]['data'])) {
+              if (!_.isEmpty(parseBody[key]['data']['price_overview'])) {
+                Price.create({
+                  AppID: key,
+                  Country: parseBody[key]['data']['price_overview']['currency'],
+                  PriceInitial: parseBody[key]['data']['price_overview']['initial'],
+                  PriceFinal: parseBody[key]['data']['price_overview']['final'],
+                  PriceDiscount: parseBody[key]['data']['price_overview']['discount_percent']
+                })
+              }
             }
           }
-        }
-      })
-    })
+
+        })
+      }, i * 3000);
+    }
     return
   }
 }
