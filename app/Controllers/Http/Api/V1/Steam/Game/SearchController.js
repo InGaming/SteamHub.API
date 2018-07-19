@@ -1,154 +1,155 @@
 'use strict'
 const Price = use('App/Models/Api/V1/Steam/Game/Price')
-const List = use('App/Models/Api/V1/Steam/Game/List')
+const GetGameApps = use('App/Models/Api/V1/Steam/App')
 const Redis = use('Redis')
 
 class SearchController {
-  async index ({ request, response }) {
+  async index ({ request }) {
 
     const q =request.get().q
     const price = request.get().price
-    const appid = request.get().appid
-    const name = request.get().name
+    const AppID = request.get().AppID
+    const Name = request.get().Name
     const filter = request.get().filter
     const priceTime = request.get().priceTime
 
     if (q && filter) {
       if (filter === 'price') {
         return getPriceQuestion(q)
-      } else if (q) {
-        return getQuestionList(q)
       }
+    } else if (q) {
+      return getQuestionList(q)
     }
 
     if (price && filter) {
-      if (filter === 'initial') {
+      if (filter === 'PriceInitial') {
         return getPriceInitial(price)
-      } else if (filter === 'final') {
+      } else if (filter === 'PriceFinal') {
         return getPriceFinal(price)
-      } else if (filter === 'timeFinalAsc') {
+      } else if (filter === 'TimeFinalAsc') {
         return getPriceFinalTimeAsc(price)
-      } else if (filter === 'timeFinalDesc') {
+      } else if (filter === 'TimeFinalDesc') {
         return getPriceFinalTimeDesc(price)
       }
     } else if (price) {
       return getPrice(price)
     }
 
-    if (name) {
-      return getGameName(name)
+    if (Name) {
+      return getGameName(Name)
     }
 
-    if (appid && priceTime) {
+    if (AppID && priceTime) {
       const splitPriceTime = priceTime.split(",")
-      return getGamePriceTime(appid, splitPriceTime)
-    }else if (appid && filter) {
-      if (filter === 'historicalLowPrice') {
-        return getGameHistoricalLowPrice(appid)
-      } else if (filter === 'priceTimeAsc') {
-        return getGamePriceTimeAsc(appid)
-      } else if (filter === 'priceTimeDesc') {
-        return getGamePriceTimeDesc(appid)
-      } else if (filter === 'priceDiscountNow') {
-        return getGamePriceDiscountNow(appid)
+      return getGamePriceTime(AppID, splitPriceTime)
+    }else if (AppID && filter) {
+      if (filter === 'HistoricalLowPrice') {
+        return getGameHistoricalLowPrice(AppID)
+      } else if (filter === 'PriceTimeAsc') {
+        return getGamePriceTimeAsc(AppID)
+      } else if (filter === 'PriceTimeDesc') {
+        return getGamePriceTimeDesc(AppID)
+      } else if (filter === 'PriceDiscountNow') {
+        return getGamePriceDiscountNow(AppID)
       }
-    }else if (appid) {
-      return getGameId(appid)
+    }else if (AppID) {
+      return getGameId(AppID)
     }
 
     // 精准查询 原价/折后价
     async function getPrice(price) {
-      const data = await Price.query().with('app')
-                                      .where('initial', price*100)
-                                      .orWhere('final', price*100)
+      const data = await Price.query().with('Apps')
+                                      .where('PriceInitial', price*100)
+                                      .orWhere('PriceFinal', price*100)
                                       .fetch()
       return data.toJSON()
     }
 
     // 精准查询 原价
     async function getPriceInitial(price) {
-      const data = await Price.query().with('app').where('initial', price*100).fetch()
+      const data = await Price.query().with('Apps').where('PriceInitial', price*100).fetch()
       return data.toJSON()
     }
 
     // 精准查询 折后价
     async function getPriceFinal(price) {
-      const data = await Price.query().with('app').where('final', price*100).fetch()
+      const data = await Price.query().with('Apps').where('PriceFinal', price*100).fetch()
       return data.toJSON()
     }
 
     // 查询指定 时间段 的折后价(时间增序)
     async function getPriceFinalTimeAsc(price) {
-      const data = await Price.query().with('app').where('final', price*100).orderBy('created_at', 'asc').fetch()
+      const data = await Price.query().with('Apps').where('PriceFinal', price*100).orderBy('LastUpdated', 'asc').fetch()
       return data.toJSON()
     }
 
     // 查询指定 时间段 的折后价(时间降序)
-    async function getPriceFinalTimeAsc(price) {
-      const data = await Price.query().with('app').where('final', price*100).orderBy('created_at', 'desc').fetch()
+    async function getPriceFinalTimeDesc(price) {
+      const data = await Price.query().with('Apps').where('PriceFinal', price*100).orderBy('LastUpdated', 'desc').fetch()
       return data.toJSON()
     }
 
     // 模糊查询 价格
     async function getPriceQuestion(q) {
-      const data = await Price.query().with('app')
-                                    .where('appid', q)
-                                    .orWhere('initial', q*100)
-                                    .orWhere('final', q*100)
-                                    .orWhere('discount_percent', q)
+      const data = await Price.query().with('Apps')
+                                    .where('AppID', q)
+                                    .orWhere('PriceInitial', q*100)
+                                    .orWhere('PriceFinal', q*100)
+                                    .orWhere('PriceDiscount', q)
                                     .fetch()
       return data.toJSON()
     }
 
     // 模糊查询 列表
     async function getQuestionList(q) {
-      const data = await List.query().with('prices')
-                                    .where('appid', q)
-                                    .orWhere('name', 'like', '%' + q + '%')
-                                    .orWhere('created_at', 'like', '%' + q + '%')
+      const data = await GetGameApps.query().with('AppsPrices')
+                                    .where('AppID', q)
+                                    .orWhere('Name', 'like', '%' + q + '%')
+                                    .orWhere('ChineseName', 'like', '%' + q + '%')
+                                    .orWhere('LastUpdated', 'like', '%' + q + '%')
                                     .fetch()
       return data.toJSON()
     }
 
-    // 请求指定 appid 内容
-    async function getGameId (appid) {
-      const data = await List.query().with('prices').where('appid', appid).fetch()
+    // 请求指定 AppID 内容
+    async function getGameId (AppID) {
+      const data = await GetGameApps.query().with('AppsPrices').where('AppID', AppID).fetch()
       return data.toJSON()
     }
 
-    // 请求指定 name 内容
-    async function getGameName (name) {
-      const data = await List.query().with('prices').where('name', 'like', '%' + name + '%').fetch()
+    // 请求指定 Name 内容
+    async function getGameName (Name) {
+      const data = await GetGameApps.query().with('AppsPrices').where('Name', 'like', '%' + Name + '%').orWhere('ChineseName', 'like', '%' + q + '%').fetch()
       return data.toJSON()
     }
 
-    // 请求指定 appid 价格(时间增序)
-    async function getGamePriceTimeAsc (appid) {
-      const data = await Price.query().with('app').where('appid', appid).orderBy('created_at', 'asc').fetch()
+    // 请求指定 AppID 价格(时间增序)
+    async function getGamePriceTimeAsc (AppID) {
+      const data = await Price.query().with('Apps').where('AppID', AppID).orderBy('LastUpdated', 'asc').fetch()
       return data.toJSON()
     }
 
-    // 请求指定 appid 价格(时间降序)
-    async function getGamePriceTimeDesc (appid) {
-      const data = await Price.query().with('app').where('appid', appid).orderBy('created_at', 'desc').fetch()
+    // 请求指定 AppID 价格(时间降序)
+    async function getGamePriceTimeDesc (AppID) {
+      const data = await Price.query().with('Apps').where('AppID', AppID).orderBy('LastUpdated', 'desc').fetch()
       return data.toJSON()
     }
 
-    // 请求指定 appid 历史最低价格
-    async function getGameHistoricalLowPrice (appid) {
-      const data = await Price.query().with('app').where('appid', appid).orderBy('final', 'asc').first()
-      return data.toJSON()
+    // 请求指定 AppID 历史最低价格
+    async function getGameHistoricalLowPrice (AppID) {
+      const data = await Price.query().with('Apps').where('AppID', AppID).orderBy('PriceFinal', 'asc').first()
+      return data
     }
 
     // 请求当前是否打折
-    async function getGamePriceDiscountNow (appid) {
-      const data = await Price.query().with('app').where('appid', appid).orderBy('created_at', 'desc').first()
-      return data.toJSON()
+    async function getGamePriceDiscountNow (AppID) {
+      const data = await Price.query().with('Apps').where('AppID', AppID).orderBy('LastUpdated', 'desc').first()
+      return data
     }
 
     // 请求指定 价格时间段
-    async function getGamePriceTime (appid, priceTime) {
-      const data = await Price.query().with('app').where('appid', appid).whereBetween('created_at', priceTime)
+    async function getGamePriceTime (AppID, priceTime) {
+      const data = await Price.query().with('Apps').where('AppID', AppID).whereBetween('LastUpdated', priceTime)
       return data
     }
     
