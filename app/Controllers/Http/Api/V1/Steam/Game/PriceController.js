@@ -58,7 +58,7 @@ class PriceController {
     const arrayAppList = appList.toJSON()
 
     const appidList = _.map(arrayAppList, 'appid')
-    const chunkAppidList = _.chunk(appidList, 100)
+    const chunkAppidList = _.chunk(appidList, 20)
     for (let i = 0; i < chunkAppidList.length; i++) {
       setTimeout(function timer() {
         requested('https://store.steampowered.com/api/appdetails?appids=' + chunkAppidList[i] + '&cc=cn&filters=price_overview', function (error, response, body) {
