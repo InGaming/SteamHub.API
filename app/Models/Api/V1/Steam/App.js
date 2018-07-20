@@ -7,6 +7,14 @@ class App extends Model {
     return 'Apps'
   }
 
+  static get createdAtColumn () {
+    return null
+  }
+
+  static get updatedAtColumn () {
+    return 'LastUpdated'
+  }
+
   // 反向关联 AppsTypes 表
   AppsTypes () {
     return this.belongsTo('App/Models/Api/V1/Steam/AppType', 'AppType', 'AppType')
