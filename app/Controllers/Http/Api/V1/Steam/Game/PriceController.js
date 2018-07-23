@@ -115,7 +115,7 @@ class PriceController {
                       if (oldPrice.length === 1) {
                         Price.create(insertPrice)
                       } else {
-                        await Price.query().where('AppID', key).where('Country', country[item]['country']).where('LastUpdated', oldPriceFirst).update(insertPrice)
+                        await Price.query().where('AppID', key).where('Country', country[item]['country']).where('LastUpdated', oldPriceFirst.LastUpdated).update(insertPrice)
                       }
                     }
     
@@ -124,7 +124,7 @@ class PriceController {
                     if (oldPriceFirst === null || oldPrice.length === 1) {
                       Price.create(insertPriceNull)
                     } else {
-                      await Price.query().where('AppID', key).where('Country', country[item]['country']).where('LastUpdated', oldPriceFirst).update(insertPriceNull)
+                      await Price.query().where('AppID', key).where('Country', country[item]['country']).where('LastUpdated', oldPriceFirst.LastUpdated).update(insertPriceNull)
                     }
     
                   }
@@ -132,7 +132,7 @@ class PriceController {
                   if (oldPriceFirst === null || oldPrice.length === 1) {
                     Price.create(insertPriceNull)
                   } else {
-                    await Price.query().where('AppID', key).where('Country', country[item]['country']).where('LastUpdated', oldPriceFirst).update(insertPriceNull)
+                    await Price.query().where('AppID', key).where('Country', country[item]['country']).where('LastUpdated', oldPriceFirst.LastUpdated).update(insertPriceNull)
                   }
                 }
               }
