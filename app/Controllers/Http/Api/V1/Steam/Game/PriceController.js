@@ -26,25 +26,13 @@ class PriceController {
 
   async show({ params, request, response }) {
     const appid = params.id
-    const page = request.get().page
-    if (page !== undefined) {
-      const cachedPagePrices = await Redis.get('steamGamePagePrices=' + page)
-
-      if (cachedPagePrices) {
-        response.send(JSON.parse(cachedPagePrices))
-      }
-      const pagePrices = await Price.query().where('appid', appid).paginate(page)
-      await Redis.set('steamGamePagePrices=' + page, JSON.stringify(pagePrices.toJSON()), 'ex', 43200)
-      response.send(pagePrices)
-    }
-
-
+    const country = request.get().country
     const cachedPrices = await Redis.get('steamGamePrices=' + appid)
     if (cachedPrices) {
       response.send(JSON.parse(cachedPrices))
     }
-    const prices = await Price.query().where('appid', appid).fetch()
-    await Redis.set('steamGamePrices=' + appid, JSON.stringify(prices.toJSON()), 'ex', 43200)
+    const prices = await Price.query().where('appid', appid).where('Country', country).fetch()
+    await Redis.set('steamGamePrices=' + appid + country, JSON.stringify(prices.toJSON()), 'ex', 43200)
     return prices.toJSON()
   }
 
