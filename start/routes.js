@@ -14,7 +14,7 @@
 */
 
 const Route = use('Route')
-
+const User = use('App/Models/User')
 Route.on('/').render('welcome')
 
 Route
@@ -33,3 +33,12 @@ Route
   })
   .prefix('api/v1/steam')
   .namespace('Api/V1/Steam')
+
+Route
+  .group(() => {
+    Route.post('/login', 'AuthController.login')
+    Route.post('/logout', 'AuthController.logout').middleware('auth')
+    Route.get('/users/me', 'AuthController.me').middleware('auth')
+  })
+  .prefix('api/v1/admin')
+  .namespace('Api/V1/Admin')

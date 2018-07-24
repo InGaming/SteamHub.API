@@ -33,6 +33,7 @@
     "chunk-array": "^1.0.2",
     "got": "^8.3.1",
     "lodash": "^4.17.10",
+    "ms": "^2.1.1",
     "mysql2": "^1.5.3",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
