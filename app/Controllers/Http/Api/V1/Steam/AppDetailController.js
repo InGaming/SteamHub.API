@@ -9,7 +9,7 @@ class AppDetailController {
       return JSON.parse(Cache)
     }
 
-    const response = await got('https://store.steampowered.com/api/appdetails?appids=' + params.id + '&cc=cn')
+    const response = await got('https://store.steampowered.com/api/appdetails?appids=' + params.id + '&cc=cn&l=schinese')
 
     await Redis.set('GameDetails=' + params.id, response.body, 'ex', 7200)
     return JSON.parse(response.body)
