@@ -22,7 +22,8 @@ const providers = [
   '@adonisjs/websocket/providers/WsProvider',
   '@adonisjs/drive/providers/DriveProvider',
   '@adonisjs/redis/providers/RedisProvider',
-  'adonis-kue/providers/KueProvider'
+  'adonis-kue/providers/KueProvider',
+  '@adonisjs/validator/providers/ValidatorProvider'
 ]
 
 /*

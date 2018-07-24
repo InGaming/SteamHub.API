@@ -42,3 +42,10 @@ Route
   })
   .prefix('api/v1/admin')
   .namespace('Api/V1/Admin')
+
+Route
+  .group(() => {
+    Route.resource('/articles', 'ArticleController')
+  })
+  .prefix('api/v1')
+  .namespace('Api/V1')
