@@ -17,7 +17,7 @@ class ArticleController {
       if (Cache) {
         return JSON.parse(Cache)
       }
-      const articles = await Article.query().where('type', type).paginate(page)
+      const articles = await Article.query().where('type', type).orderBy('LastUpdated', 'desc').paginate(page)
       await Redis.set('Articles=' + page + type, JSON.stringify(articles.toJSON()), 'ex', 300)
       return articles
     }
@@ -28,7 +28,7 @@ class ArticleController {
       return JSON.parse(Cache)
     }
 
-    const articles = await Article.query().paginate(page)
+    const articles = await Article.query().orderBy('LastUpdated', 'desc').paginate(page)
     await Redis.set('Articles=' + page, JSON.stringify(articles.toJSON()), 'ex', 300)
     return articles
   }
