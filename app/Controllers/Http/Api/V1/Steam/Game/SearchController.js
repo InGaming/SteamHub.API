@@ -6,7 +6,8 @@ const GetGameApps = use('App/Models/Api/V1/Steam/App')
 class SearchController {
   async index ({ request }) {
 
-    const q =request.get().q
+    const q = request.get().q
+    const page = request.get().page
     const price = request.get().price
     const AppID = request.get().AppID
     const Name = request.get().Name
