@@ -162,7 +162,8 @@ class SearchController {
       if (page === undefined) {
         page = 1
       }
-      const data = await Info.query().where('Key', 'like', '%' + q + '%')
+      const data = await Info.query().where('Key', 153)
+                                    .where('Value', 'like', '%' + q + '%')
                                     .paginate(page)
       return data.toJSON()
     }
