@@ -1,7 +1,7 @@
 'use strict'
 const Price = use('App/Models/Api/V1/Steam/Game/Price')
+const Info = use('App/Models/Api/V1/Steam/AppInfo')
 const GetGameApps = use('App/Models/Api/V1/Steam/App')
-const Redis = use('Redis')
 
 class SearchController {
   async index ({ request }) {
@@ -16,6 +16,9 @@ class SearchController {
     if (q && filter) {
       if (filter === 'price') {
         return getPriceQuestion(q)
+      }
+      if (filter === 'tag') {
+        return getGameTag(q, page)
       }
     } else if (q) {
       return getQuestionList(q)
@@ -153,6 +156,16 @@ class SearchController {
       return data
     }
     
+    // 模糊查询 标签
+    async function getGameTag(q, page) {
+      if (page === undefined) {
+        page = 1
+      }
+      const data = await Info.query().where('Key', 'like', '%' + q + '%')
+                                    .paginate(page)
+      return data.toJSON()
+    }
+
   }
 }
 
