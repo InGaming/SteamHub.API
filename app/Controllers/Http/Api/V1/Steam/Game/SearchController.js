@@ -162,7 +162,8 @@ class SearchController {
       if (page === undefined) {
         page = 1
       }
-      const data = await Info.query().where('Key', 153)
+      const data = await Info.query().with('Apps')
+                                    .where('Key', 153)
                                     .where('Value', 'like', '%' + q + '%')
                                     .orderByRaw('RAND()')
                                     .paginate(page)
