@@ -164,6 +164,7 @@ class SearchController {
       }
       const data = await Info.query().where('Key', 153)
                                     .where('Value', 'like', '%' + q + '%')
+                                    .orderByRaw('RAND()')
                                     .paginate(page)
       return data.toJSON()
     }
