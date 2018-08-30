@@ -25,7 +25,7 @@ class App extends Model {
     return this.hasMany('App/Models/Api/V1/Steam/AppInfo', 'AppID', 'AppID')
   }
 
-  // 关联 AppsInfo 表
+  // 关联 AppsPrices 表
   AppsPrices () {
     return this.hasMany('App/Models/Api/V1/Steam/Game/Price', 'AppID', 'AppID')
   }
