@@ -7,7 +7,7 @@ const requested = require('request')
 const _ = require('lodash')
 
 class PriceController {
-  async index({ request, response }) {
+  async index ({ request, response }) {
 
     let page = request.get().page
     if (page === undefined) {
@@ -24,7 +24,7 @@ class PriceController {
 
   }
 
-  async show({ params, request, response }) {
+  async show ({ params, request, response }) {
     const appid = params.id
     const country = request.get().country
     const cachedPrices = await Redis.get('steamGamePrices=' + appid)
@@ -36,7 +36,7 @@ class PriceController {
     return prices.toJSON()
   }
 
-  async store({ request }) {
+  async store ({ request }) {
     const key = request.get().key
     if (key !== Env.get('API_KEY')) {
       return 'error'
@@ -74,9 +74,9 @@ class PriceController {
     const appidList = _.map(arrayAppList, 'appid')
     const chunkAppidList = _.chunk(appidList, 20)
     for (let i = 0; i < chunkAppidList.length; i++) {
-      setTimeout(function timer() {
+      setTimeout(function timer () {
         for (let item in country) {
-          setTimeout(function timer() {
+          setTimeout(function timer () {
             requested('https://store.steampowered.com/api/appdetails?appids=' + chunkAppidList[i] + '&cc=' + country[item]['cc'] + '&filters=price_overview', async function (error, response, body) {
               let parseBody = JSON.parse(body)
               let Country = country[item]['country']
