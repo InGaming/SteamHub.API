@@ -19,8 +19,8 @@ class GameController {
     
     client.logOn(logOnOptions)
     
-    client.on('steamGuard', function(domain, callback) {
-      console.log("Steam Guard code needed from email ending in " + domain)
+    client.on('steamGuard', function (domain, callback) {
+      console.log('Steam Guard code needed from email ending in ' + domain)
       const code = getCodeSomehow()
       callback(code)
     })
