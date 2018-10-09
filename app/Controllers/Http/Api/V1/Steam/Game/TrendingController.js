@@ -2,6 +2,7 @@
 const cheerio = require('cheerio')
 const requested = require('request')
 const Trending = use('App/Models/Api/V1/Steam/Game/Trending')
+const Env = use('Env')
 const _ = require('lodash')
 
 class TrendingController {
