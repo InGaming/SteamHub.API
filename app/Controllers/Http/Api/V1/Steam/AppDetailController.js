@@ -32,14 +32,19 @@ class AppDetailController {
           setTimeout(function timer () {
             requested('https://store.steampowered.com/api/appdetails?appids=' + appidList[i] + '&l=' + country[item]['lang'], async function (error, body) {
               if (!error) {
-                Detail.create({
-                  'AppID': appidList[i],
-                  'Language': country[item]['lang'],
-                  'Data': JSON.stringify(body.body)
-                })
+                let oldDetail = await Detail.query().where('AppID', appidList[i]).where('Language', country[item]['lang']).orderBy('LastUpdated', 'desc')
+                if (oldDetail) {
+                  await Detail.query().where('AppID', appidList[i]).where('Language', country[item]['lang']).update({ 'Data': JSON.stringify(body.body) })
+                } else {
+                  Detail.create({
+                    'AppID': appidList[i],
+                    'Language': country[item]['lang'],
+                    'Data': JSON.stringify(body.body)
+                  })
+                }
               }
             })
-          }, i * 2000)
+          }, i * 1000)
         }
       }, i * 1000)
     }
