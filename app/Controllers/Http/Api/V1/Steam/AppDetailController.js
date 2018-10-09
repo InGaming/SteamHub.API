@@ -35,13 +35,13 @@ class AppDetailController {
                 Detail.create({
                   'AppID': appidList[i],
                   'Language': country[item]['lang'],
-                  'Data': JSON.stringify(body)
+                  'Data': JSON.stringify(body.body)
                 })
               }
             })
-          }, i * 500)
+          }, i * 2000)
         }
-      }, i * 500)
+      }, i * 1000)
     }
     return
   }
