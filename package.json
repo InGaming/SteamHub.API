@@ -31,6 +31,7 @@
     "@adonisjs/validator": "^5.0.3",
     "@adonisjs/websocket": "^1.0.10",
     "adonis-kue": "^5.0.1",
+    "cheerio": "^1.0.0-rc.2",
     "chunk-array": "^1.0.2",
     "got": "^8.3.1",
     "lodash": "^4.17.10",
