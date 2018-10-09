@@ -33,7 +33,7 @@ class AppDetailController {
             requested('https://store.steampowered.com/api/appdetails?appids=' + appidList[i] + '&l=' + country[item]['lang'], async function (error, body) {
               if (!error) {
                 let oldDetail = await Detail.query().where('AppID', appidList[i]).where('Language', country[item]['lang']).orderBy('LastUpdated', 'desc')
-                if (oldDetail) {
+                if (oldDetail && oldDetail.length) {
                   await Detail.query().where('AppID', appidList[i]).where('Language', country[item]['lang']).update({ 'Data': JSON.stringify(body.body) })
                 } else {
                   Detail.create({
