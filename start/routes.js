@@ -26,6 +26,7 @@ Route
     Route.resource('/game/searches', '/Game/SearchController')
     Route.resource('/game/features', '/Game/FeatureController')
     Route.resource('/game/trending', '/Game/TrendingController')
+    Route.resource('/game/topsellers', '/Game/TopSellerController')
     Route.resource('/rss', '/RSSController')
     Route.resource('/apps', '/AppController')
     Route.resource('/app/infos', '/AppInfoController')
