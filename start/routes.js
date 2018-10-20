@@ -56,6 +56,7 @@ Route
   .group(() => {
     Route.resource('/vgtime', 'VgtimeController')
     Route.resource('/3dmgame', 'ThreeDmgameController')
+    Route.resource('/gamersky', 'GamerSkyController')
   })
   .prefix('api/v1/news')
   .namespace('Api/V1/News')
