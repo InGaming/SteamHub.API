@@ -13,6 +13,7 @@ class VgtimeController {
     }
 
     requestData()
+    evalData()
 
     function requestData () {
       requested('https://www.vgtime.com/topic/index/load.jhtml?page=1&pageSize=99', async function (error, body) {
@@ -63,6 +64,29 @@ class VgtimeController {
                 Link: element.link,
                 Type: element.type,
                 Site: element.site
+              })
+            }
+          })
+        }
+      })
+    }
+
+    function evalData () {
+      requested('https://www.vgtime.com/game/eval_list.jhtml?page=1&pageSize=99', async function (error, body) {
+        if (!error) {
+          let data = JSON.parse(body.body)
+          data.data.forEach(async element => {
+            let newsData =  await News.query().where('title', element.title)
+            if (newsData.length === 0) {
+              News.create({
+                Title: element.title,
+                Description: element.remark,
+                Advantage: element.merit,
+                Disadvantage: element.defect,
+                Type: '评测',
+                Site: 'vgtime',
+                Link: 'https://www.vgtime.com/topic/' + element.id + '.jhtml',
+                Star: element.editorScore
               })
             }
           })
