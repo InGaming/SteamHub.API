@@ -63,7 +63,8 @@ class VgtimeController {
                 Description: element.description,
                 Link: element.link,
                 Type: element.type,
-                Site: element.site
+                Site: element.site,
+                Image: element.image
               })
             }
           })
