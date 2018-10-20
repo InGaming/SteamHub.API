@@ -86,7 +86,8 @@ class VgtimeController {
                 Type: '评测',
                 Site: 'vgtime',
                 Link: 'https://www.vgtime.com/topic/' + element.id + '.jhtml',
-                Star: element.editorScore
+                Star: element.editorScore,
+                Image: element.image
               })
             }
           })
