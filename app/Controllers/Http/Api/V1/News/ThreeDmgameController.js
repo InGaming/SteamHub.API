@@ -62,7 +62,7 @@ class ThreeDmgameController {
                   Link: element.link,
                   Type: element.type,
                   Site: element.site,
-                  Image: element.image
+                  Image: 'https://www.3dmgame.com/' + element.image
                 })
               }
             }
