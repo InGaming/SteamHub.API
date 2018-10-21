@@ -16,7 +16,7 @@ class GamerSkyController {
     evalData()
     
     function requestData () {
-      requested.get('https://www.gamersky.com/news/',{
+      requested.get('https://www.gamersky.com/pcgame/',{
         headers: {
           'User-Agent': 'Baiduspider'
         }
@@ -30,7 +30,7 @@ class GamerSkyController {
           let image = []
           let link = []
           let description = []
-          $('.Mid2L_con .pictxt .tit .tt').each((idx, element) => {
+          $('ul .pictxt li .tit a').each((idx, element) => {
             title.push({
               title: $(element).text()
             })
@@ -38,29 +38,24 @@ class GamerSkyController {
               site: 'gamersky'
             })
           })
-          $('.Mid2L_con .pictxt .con .txt').each((idx, element) => {
+          $('ul.pictxt li .txt').each((idx, element) => {
             description.push({
               description: $(element).text()
             })
           })
-          $('.Mid2L_con .pictxt .tit .dh').each((idx, element) => {
-            type.push({
-              type: $(element).text()
-            })
-          })
-          $('.Mid2L_con .pictxt .img a img').each((idx, element) => {
+          $('.pictxt .img a img').each((idx, element) => {
             image.push({
               image: $(element).attr('src')
             })
           })
-          $('.Mid2L_con .pictxt .tit .tt').each((idx, element) => {
+          $('ul .pictxt li .tit a').each((idx, element) => {
             link.push({
               link: $(element).attr('href')
             })
           })
-          const arrayData = _.merge(title, description, type, image, link, site)
+          const arrayData = _.merge(title, description, image, link, site)
           arrayData.forEach(async element => {
-            if (element.title && element.type !== '新游') {
+            if (element.title) {
               let newsData =  await News.query().where('title', element.title)
               if (newsData.length === 0) {
                 News.create({
