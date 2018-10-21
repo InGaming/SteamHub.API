@@ -15,12 +15,12 @@ class GamerSkyController {
     requestData()
 
     function requestData () {
-      requested.get('https://www.gamersky.com/news/pc/zx/',{
+      requested.get('https://www.gamersky.com/pcgame/',{
         headers: {
           'User-Agent': 'Baiduspider'
         }
       }, async function (error, body) {
-        if (!error) {
+        if (true) {
           let data = body.body
           const $ = cheerio.load(data)
           let title = []
@@ -29,7 +29,7 @@ class GamerSkyController {
           let image = []
           let link = []
           let description = []
-          $('.con .tit a').each((idx, element) => {
+          $('.pictxt .con .tit a').each((idx, element) => {
             title.push({
               title: $(element).text()
             })
@@ -40,17 +40,17 @@ class GamerSkyController {
               type: '新闻'
             })
           })
-          $('.con .txt').each((idx, element) => {
+          $('.pictxt .con .txt').each((idx, element) => {
             description.push({
               description: $(element).text()
             })
           })
-          $('.img a img').each((idx, element) => {
+          $('.pictxt .img a img').each((idx, element) => {
             image.push({
               image: $(element).attr('src')
             })
           })
-          $('.con .tit a').each((idx, element) => {
+          $('.pictxt .con .tit a').each((idx, element) => {
             link.push({
               link: $(element).attr('href')
             })
