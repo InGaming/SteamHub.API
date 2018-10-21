@@ -25,12 +25,11 @@ class GamerSkyController {
           let data = body.body
           const $ = cheerio.load(data)
           let title = []
-          let type = []
           let site = []
           let image = []
           let link = []
           let description = []
-          $('ul .pictxt li .tit a').each((idx, element) => {
+          $('.pictxt .con .tit a').each((idx, element) => {
             title.push({
               title: $(element).text()
             })
@@ -48,12 +47,13 @@ class GamerSkyController {
               image: $(element).attr('src')
             })
           })
-          $('ul .pictxt li .tit a').each((idx, element) => {
+          $('.pictxt .con .tit a').each((idx, element) => {
             link.push({
               link: $(element).attr('href')
             })
           })
           const arrayData = _.merge(title, description, image, link, site)
+          console.log(arrayData)
           arrayData.forEach(async element => {
             if (element.title) {
               let newsData =  await News.query().where('title', element.title)
