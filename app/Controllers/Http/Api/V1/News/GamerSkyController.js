@@ -36,13 +36,15 @@ class GamerSkyController {
             site.push({
               site: 'gamersky'
             })
-            type.push({
-              type: '新闻'
-            })
           })
           $('.Mid2L_con .pictxt .con .txt').each((idx, element) => {
             description.push({
               description: $(element).text()
+            })
+          })
+          $('.Mid2L_con .pictxt .tit .dh').each((idx, element) => {
+            type.push({
+              type: $(element).text()
             })
           })
           $('.Mid2L_con .pictxt .img a img').each((idx, element) => {
@@ -59,12 +61,12 @@ class GamerSkyController {
           arrayData.forEach(async element => {
             if (element.title) {
               let newsData =  await News.query().where('title', element.title)
-              if (newsData.length === 0) {
+              if (newsData.length === 0 && element.type !== '手游') {
                 News.create({
                   Title: element.title,
                   Description: element.description,
                   Link: element.link,
-                  Type: element.type,
+                  Type: '新闻',
                   Site: element.site,
                   Image: element.image
                 })
