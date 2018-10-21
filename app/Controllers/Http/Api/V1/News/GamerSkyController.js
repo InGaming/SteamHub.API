@@ -6,14 +6,15 @@ const _ = require('lodash')
 const News = use('App/Models/Api/V1/News')
 
 class GamerSkyController {
-  store ({ request }) {
+  async store ({ request }) {
     const key = request.get().key
     if (key !== Env.get('API_KEY')) {
       return 'error'
     }
 
-    requestData()
-
+    await requestData()
+    await evalData()
+    
     function requestData () {
       requested.get('https://www.gamersky.com/news/',{
         headers: {
@@ -59,7 +60,6 @@ class GamerSkyController {
           })
           const arrayData = _.merge(title, description, type, image, link, site)
           arrayData.forEach(async element => {
-            console.log(element.type)
             if (element.title && element.type !== '新游') {
               let newsData =  await News.query().where('title', element.title)
               if (newsData.length === 0) {
@@ -121,7 +121,7 @@ class GamerSkyController {
               star: $(element).text()
             })
           })
-          const arrayData = _.merge(title, description, type, image, link, site)
+          const arrayData = _.merge(title, description, image, link, site)
           arrayData.forEach(async element => {
             if (element.title) {
               let newsData =  await News.query().where('title', element.title)
