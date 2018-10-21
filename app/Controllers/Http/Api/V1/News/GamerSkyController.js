@@ -6,14 +6,14 @@ const _ = require('lodash')
 const News = use('App/Models/Api/V1/News')
 
 class GamerSkyController {
-  async store ({ request }) {
+  store ({ request }) {
     const key = request.get().key
     if (key !== Env.get('API_KEY')) {
       return 'error'
     }
 
-    await requestData()
-    await evalData()
+    requestData()
+    evalData()
     
     function requestData () {
       requested.get('https://www.gamersky.com/news/',{
