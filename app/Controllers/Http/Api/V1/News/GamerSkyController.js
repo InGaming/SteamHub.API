@@ -116,7 +116,7 @@ class GamerSkyController {
               star: $(element).text()
             })
           })
-          const arrayData = _.merge(title, description, image, link, site)
+          const arrayData = _.merge(title, description, image, link, star, site)
           arrayData.forEach(async element => {
             if (element.title) {
               let newsData =  await News.query().where('title', element.title)
