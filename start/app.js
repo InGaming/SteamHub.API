@@ -22,7 +22,6 @@ const providers = [
   '@adonisjs/websocket/providers/WsProvider',
   '@adonisjs/drive/providers/DriveProvider',
   '@adonisjs/redis/providers/RedisProvider',
-  'adonis-kue/providers/KueProvider',
   '@adonisjs/validator/providers/ValidatorProvider'
 ]
 
@@ -37,7 +36,6 @@ const providers = [
 */
 const aceProviders = [
   '@adonisjs/lucid/providers/MigrationsProvider',
-  'adonis-kue/providers/CommandsProvider'
 ]
 
 /*
